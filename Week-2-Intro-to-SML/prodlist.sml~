@@ -1,0 +1,4 @@
+fun prod_list (xs : int list) =
+    if null xs
+    then 1
+    else hd xs * sum_list(tl xs)
