@@ -62,3 +62,18 @@ fun what_month (day: int) =
     in number_before_reaching_sum(day, days_in_month)+1
     end
 	
+fun month_range (day1: int, day2: int) =
+    let val month1 = what_month(day1)
+	val month2 = what_month(day2)
+	fun month_helper (curr: int, final: int, month_list: int list) =
+	if curr > final
+	then month_list
+	else month_helper(curr, final-1, final :: month_list)
+    in month_helper(month1, month2, [])
+    end
+	
+fun oldest (dates: (int*int*int) list) =
+    if null dates
+    then NONE
+	     else 
+			       
