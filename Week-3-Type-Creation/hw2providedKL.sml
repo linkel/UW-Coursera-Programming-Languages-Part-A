@@ -13,8 +13,25 @@ fun all_except_option (s, []) = NONE
 	true => SOME xs
       | false => case all_except_option(s, xs) of
 		     NONE => NONE
-		  | SOME y => SOME (x :: y) 
+		   | SOME y => SOME (x :: y)
 
+fun get_substitutions1 (str, []) = []
+  | get_substitutions1(str, lst :: rest) =
+    case all_except_option(str, lst) of
+	NONE => []
+      | SOME thing  => case get_substitutions1 (str, rest) of
+			   [] => thing
+			 | stuff  => thing @ stuff
+						 
+fun get_substitutions2 (str, lst) =
+    let fun helper (str, [], concat) = concat
+	  | helper (str, lst :: rest, concat) =
+	    case all_except_option (str, lst) of
+		NONE => helper (str, rest, concat)
+	      | SOME thing  => helper (str, rest, thing @ concat)
+    in helper (str, lst, [])
+    end
+							 
 (* you may assume that Num is always used with values 2, 3, ..., 10
    though it will not really come up *)
 datatype suit = Clubs | Diamonds | Hearts | Spades
