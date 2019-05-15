@@ -80,4 +80,14 @@ fun remove_card ([], c: card, e) = raise e
 	true => cs
      |  false  => x :: remove_card (cs, c, e)
 		    
-	
+fun all_same_color (c::cs) =
+	let val starter = card_color(c)
+		fun helper ([]) = true
+		| helper (x :: xs) =
+		case card_color(x) = starter of
+			false => false
+		      | true => helper(xs)
+	in helper (cs)
+	end
+	    
+				  
