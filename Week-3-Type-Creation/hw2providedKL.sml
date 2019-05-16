@@ -90,4 +90,39 @@ fun all_same_color (c::cs) =
 	in helper (cs)
 	end
 	    
-				  
+fun sum_cards (cs: card list) =
+    let fun helper (cs, acc) =
+	    case cs of
+		[] => acc
+	      | c :: cs' => helper (cs', card_value(c) + acc)
+    in
+	helper (cs, 0)
+    end
+	
+val sum_cards_test = sum_cards ([(Spades, Ace), (Hearts, Num 4)]) = 15;
+
+fun score (cs: card list, goal: int) =
+    let val sum = sum_cards(cs)
+        val prelim = case sum <= goal of
+	   true => goal - sum
+	 | false => 3*(sum - goal)
+    in 	case all_same_color(cs) of
+	   false => prelim
+	 | true  => prelim div 2
+    end
+	
+fun officiate (cl: card list, ml: move list, goal: int) =
+    let fun helper (hl: card list, cl, ml, goal) =
+	case sum_cards(hl) > goal of
+	    true => score(hl, goal)
+	 | false => case ml of
+			[] => score (hl, goal)
+		      | m :: ms => case m of
+				       Discard cd => helper(remove_card(hl, cd, IllegalMove), cl, ms, goal)
+				     | Draw => case cl of
+						   [] => score(hl, goal)
+						 | c :: cs =>  helper(c :: hl, remove_card(cl, c, IllegalMove), ms, goal)
+    in helper([], cl, ml, goal)
+    end
+
+             
