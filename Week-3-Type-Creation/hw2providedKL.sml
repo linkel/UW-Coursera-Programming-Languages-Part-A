@@ -125,4 +125,19 @@ fun officiate (cl: card list, ml: move list, goal: int) =
     in helper([], cl, ml, goal)
     end
 
-             
+fun check_num_aces (cardlist, acc) =
+    let fun check_number_of_aces ([], acc) = acc
+       | check_number_of_aces (c::cs, acc) = case c of
+			    (_, Ace) => check_number_of_aces(cs, acc + 1)
+					 | _  => check_number_of_aces(cs, acc)
+in check_number_of_aces (cardlist, 0)
+end
+				
+			                
+fun score_challenge (cs, goal) =
+    let 
+	fun helper(cs, goal, bestscore) =
+	    let val sum = sum_cards(cs)
+	    case check_ace(cs) of
+		0 => score(cs, goal)
+	     | int n  => compare_score(score(cs, goal), n)
