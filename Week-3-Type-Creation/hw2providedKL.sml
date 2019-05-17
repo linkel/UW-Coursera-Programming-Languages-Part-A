@@ -133,11 +133,32 @@ fun check_num_aces (cardlist, acc) =
 in check_number_of_aces (cardlist, 0)
 end
 				
-			                
+(*			                
 fun score_challenge (cs, goal) =
     let 
 	fun helper(cs, goal, bestscore) =
 	    let val sum = sum_cards(cs)
 	    case check_ace(cs) of
 		0 => score(cs, goal)
-	     | int n  => compare_score(score(cs, goal), n)
+	     | int n  => compare_score(score(cs, goal), n) *)
+
+				      
+fun discard_check (hl, c, goal) = 
+	let val diff = goal - sum_cards(c::hl)
+	    fun check_if_val([], diff) = NONE
+	      | check_if_val (h::hl, diff) = case card_value(h) = diff of
+			false => check_if_val(hl, diff)
+			| true => SOME h
+	in check_if_val(hl, diff)
+	end
+	
+fun careful_player (cl, goal) =
+	let fun helper (ml, hl, [], goal) = ml
+		| helper (ml, hl, c::cs, goal) =
+			case score(hl, goal) of 
+				0 => ml
+				| _ => case discard_check(hl, c, goal) of
+				NONE => helper(Draw::ml, c::hl, cs, goal)
+				| SOME x => helper((Draw::(Discard::ml)), c::remove_card(hl, valOf x), cs, goal)
+	in helper([],[],cl,goal)
+	end
