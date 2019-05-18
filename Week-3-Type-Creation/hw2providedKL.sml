@@ -35,13 +35,28 @@ fun get_substitutions2 (lst, str) =
 
 type fullname = {first: string, middle: string, last: string}
 
-		    (* this is not coming out with original name first, it is backwards *)
+(* this is not coming out with original name first, it is backwards *)
+		    
+(*
 fun similar_names (substitutions, name : fullname) =
     let val sub_list = get_substitutions2(substitutions, #first (name))
 	fun helper([], name : fullname, accum) = accum
  	  | helper(x::xs, name, accum) =
 	    helper(xs, name, {first = x, middle = #middle (name), last = #last (name)} :: accum)
     in helper(sub_list, name, [name])
+    end
+*)
+		    
+(* this is still wrong? order is off *)
+
+fun similar_names (substitutions, {first = f, middle = m, last = l}) =
+    let val name = {first = f, middle = m, last = l}
+	fun make_subs(subs) =
+	    case subs of
+		[] => []
+	      | x :: xs => {first= x, middle= m, last= l} :: make_subs(xs)
+    in
+	[name] @ make_subs(get_substitutions2(substitutions, f))
     end
 	   
 		 				 
@@ -130,18 +145,45 @@ fun check_num_aces (cardlist, acc) =
        | check_number_of_aces (c::cs, acc) = case c of
 			    (_, Ace) => check_number_of_aces(cs, acc + 1)
 					 | _  => check_number_of_aces(cs, acc)
-in check_number_of_aces (cardlist, 0)
-end
-				
-(*			                
-fun score_challenge (cs, goal) =
-    let 
-	fun helper(cs, goal, bestscore) =
-	    let val sum = sum_cards(cs)
-	    case check_ace(cs) of
-		0 => score(cs, goal)
-	     | int n  => compare_score(score(cs, goal), n) *)
+    in check_number_of_aces (cardlist, 0)
+    end
 
+fun lowest_score (cs, pcs, lowest, goal) =
+    case cs of
+	[] => lowest
+      | (suit, Ace)::rest =>
+			    let val cst = pcs @ [(suit, Num 1)] @ rest
+				val curr_score = score(cst, goal)
+			    in
+				if curr_score < lowest
+				then lowest_score(rest, pcs @ [(suit, Num 1)], curr_score, goal)
+				else lowest_score(rest, pcs @ [(suit, Ace)], lowest, goal)
+			    end
+      |  c::rest => lowest_score(rest, pcs @ [c], lowest, goal)
+
+(* Score_challenge and officiate_challenge are not entirely mine, had to look up stuff*)    
+			                
+fun score_challenge (cs, goal) =
+    let val regular_score = score(cs, goal)
+    in lowest_score(cs, [], regular_score, goal)
+    end
+
+
+fun officiate_challenge (cs, ml, goal) =
+    let fun play_moves(cs, hl, ml) =
+	    case ml of
+		[] => hl
+	      | Discard c::ms => play_moves(cs, remove_card(hl, c, IllegalMove), ms)
+	      | Draw::ms => case cs of
+				[] => hl
+			      | c::rest =>
+				if (card_value(c) + sum_cards(hl)) > goal
+				then c::hl
+				else play_moves(rest, c::hl, ms)
+    in
+	score_challenge(play_moves(cs, [], ml), goal)
+    end
+	
 				      
 fun discard_check (hl, c, goal) = 
 	let val diff = goal - sum_cards(c::hl)
