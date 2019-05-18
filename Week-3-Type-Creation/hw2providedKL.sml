@@ -159,6 +159,6 @@ fun careful_player (cl, goal) =
 				0 => ml
 				| _ => case discard_check(hl, c, goal) of
 				NONE => helper(Draw::ml, c::hl, cs, goal)
-				| SOME x => helper((Draw::(Discard::ml)), c::remove_card(hl, valOf x), cs, goal)
+				| SOME x => helper((Draw::(Discard x::ml)), c::remove_card(hl, x, IllegalMove), cs, goal)
 	in helper([],[],cl,goal)
 	end
