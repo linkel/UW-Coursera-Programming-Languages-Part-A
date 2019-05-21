@@ -54,3 +54,7 @@ type thing = int * bool
 
 I can write thing whenever I mean int * bool. Datatype bindings however create constructors that produce values of that new type. 
 
+## Underscore
+
+Dang, this is what happens when I just read the summary lecture notes instead of watching the lecture videos. So if you have a type that has two things like the suit*rank type in the homework and you want to do some pattern matching for that type where it just matches one of the things (like the suit), you can write something like (Clubs, _) => to pattern match for just the first item in the tuple of the type and say that anything is okay for the second. 
+

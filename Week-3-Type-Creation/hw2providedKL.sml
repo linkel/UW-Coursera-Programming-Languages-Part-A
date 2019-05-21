@@ -95,7 +95,8 @@ fun remove_card ([], c: card, e) = raise e
 	true => cs
      |  false  => x :: remove_card (cs, c, e)
 		    
-fun all_same_color (c::cs) =
+fun all_same_color ([]) = true
+  | all_same_color (c::cs) = 
 	let val starter = card_color(c)
 		fun helper ([]) = true
 		| helper (x :: xs) =
@@ -116,18 +117,21 @@ fun sum_cards (cs: card list) =
 	
 val sum_cards_test = sum_cards ([(Spades, Ace), (Hearts, Num 4)]) = 15;
 
-fun score (cs: card list, goal: int) =
+fun score ([], goal: int) = goal
+  | score (cs: card list, goal: int) = 
     let val sum = sum_cards(cs)
         val prelim = case sum <= goal of
 	   true => goal - sum
 	 | false => 3*(sum - goal)
-    in 	case all_same_color(cs) of
+    in case all_same_color(cs) of
 	   false => prelim
 	 | true  => prelim div 2
     end
 	
 fun officiate (cl: card list, ml: move list, goal: int) =
-    let fun helper (hl: card list, cl, ml, goal) =
+    let fun helper (hl, [], ml, goal) = score(hl, goal)
+	  | helper (hl, cl, [], goal) = score(hl, goal) 
+	  | helper (hl: card list, cl, ml, goal) =
 	case sum_cards(hl) > goal of
 	    true => score(hl, goal)
 	 | false => case ml of
