@@ -44,3 +44,10 @@ fun longest_string1 (sl : string list) =
 
 fun longest_string2 (sl : string list) = 
    List.foldl (fn (s, longest_so_far) => if String.size(s) >= String.size(longest_so_far) then s else longest_so_far) "" sl
+
+fun longest_string_helper (f) =
+    fn sl => List.foldl (fn (s1, s2) => if f(String.size(s1), String.size(s2)) then s1 else s2) "" sl
+
+val longest_string3 = fn sl => longest_string_helper (fn (x, y) => x > y) sl
+
+val longest_string4 = fn sl => longest_string_helper (fn (x, y) => x >= y) sl
