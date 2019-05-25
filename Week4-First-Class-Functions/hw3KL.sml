@@ -61,3 +61,13 @@ fun first_answer (f) = fn al => case al of
 				  | stuff :: stuffs => case f stuff of
 							  SOME v => v
 						       | NONE => first_answer f stuffs
+fun all_answers (f) =
+    let fun helper (f, item, acc) =
+	case item of
+	    [] => SOME acc
+	  | i :: is => case f i of
+			   NONE => NONE
+			| SOME ls => helper(f, is, [ls] @ acc) 
+    in fn al => helper(f, al, [])
+    end
+	
