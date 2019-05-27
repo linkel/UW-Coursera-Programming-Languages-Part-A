@@ -71,3 +71,29 @@ fun all_answers (f) =
     in fn al => helper(f, al, [])
     end
 	
+fun count_wildcards (pat) =
+    g (fn () => 1) (fn str => 0) pat
+
+fun count_wild_and_variable_lengths (pat) =
+    g (fn () => 1) String.size pat
+
+fun count_some_var (s, pat) =
+    g (fn () => 0) (fn str => if s = str then 1 else 0) pat
+
+fun check_pat (pat) =
+    let fun stringlister (pat) =
+	    case pat of
+		Variable s => [s]
+	      | TupleP ts => List.foldl (fn (t, item) => (stringlister t) @ item) [] ts
+	      | ConstructorP (_, t) => stringlister t
+	      |  _ => []
+	fun repeats sl =
+	    case sl of
+		[] => false
+	      | x :: xs => if List.exists (fn y => x = y) xs then true else repeats (xs)
+	val checker = not o repeats o stringlister
+    in
+	checker pat
+    end
+
+(* Wasn't able to do enough this week... *)
