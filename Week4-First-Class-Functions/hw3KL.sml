@@ -64,7 +64,7 @@ fun first_answer (f) = fn al => case al of
 fun all_answers (f) =
     let fun helper (f, item, acc) =
 	case item of
-	    [] => SOME acc
+	    [] => SOME []
 	  | i :: is => case f i of
 			   NONE => NONE
 			| SOME ls => helper(f, is, [ls] @ acc) 
@@ -97,3 +97,19 @@ fun check_pat (pat) =
     end
 
 (* Wasn't able to do enough this week... *)
+
+fun match (v, p) =
+    case (v, p) of
+	(_, Wildcard) => SOME []
+      | (str, Variable sp) => SOME [(str, sp)]
+      | (Unit, UnitP) => SOME []
+      | (Const c, ConstP cp) => if c = cp then SOME [] else NONE
+      | (Tuple t, TupleP tp) => if List.length t = List.length tp then all_answers match (ListPair.zip(t, tp)) else NONE
+      | (Constructor (x1, va), ConstructorP (x2, vp)) => if x1 = x2 then match (va, vp) else NONE
+      | (_, _) => NONE
+
+
+fun first_match v = fn pl => SOME (first_answer (fn x => match (v, x)) pl)
+				  handle NoAnswer => NONE
+			   
+
