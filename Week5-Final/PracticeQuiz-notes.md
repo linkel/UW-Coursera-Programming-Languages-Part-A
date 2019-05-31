@@ -16,6 +16,7 @@ There's only one obvious choice here!
 
 3. Check this box if true regarding this code. A lexical scoping understanding question. 
 
+```
 1-   val x = 50
 2-   val y = 3
 3-   val z = 10
@@ -29,6 +30,7 @@ There's only one obvious choice here!
 11-  end
 12-  fun f x z = x + y + z
 13 - 
+```
 
 - On line 4, the variable z is bound to 10. Nope, it is not. It's in an anonymous function. Got nothing to do with the val z outside. 
 
@@ -46,10 +48,12 @@ There's only one obvious choice here!
 
 4. Check the box iff type is valid type. 
 
+```
 fun foo f x y z = 
 	if x >= y
 	then (f z)
 	else foo f y x (tl z)
+```
 
 (int -> real) -> int -> int -> int -> real
 
@@ -75,6 +79,7 @@ No, same explanation as above.
 
 I need work on figuring out what's a tail call or not. Got one wrong. 
 
+```
 fun factorial i = 
 let 
   fun factorialhelper (start,i) = 
@@ -86,6 +91,7 @@ in
   then 1
   else factorialhelper (1,i)
 end 
+```
 
 I said this was a tail call but it isn't. Will ponder on it. I was going off a heuristic where if it had let and in blocks it was probably more likely a tail call but obviously I have to actually think about this.  
 
@@ -93,6 +99,7 @@ I said this was a tail call but it isn't. Will ponder on it. I was going off a h
 
 7. maybeEven maybeOdd. I'm convinced there's a typo for "the call maybeOdd 1 does not terminate" -- doesn't it terminate with a true? Tried it in my IDE and it also terminated in true. That is the only one I got wrong for this question.
 
+```
 fun maybeEven x = 
 	if x = 0 
 	then true
@@ -108,6 +115,7 @@ and maybeOdd y =
 	if y = 99
 	then true
 	else maybeEven (y-1)
+```
 
 8, 9, and 10 were type questions that were quite trivial.
 
